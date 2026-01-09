@@ -14,17 +14,7 @@ UENUM(BlueprintType)
 enum EInputEnum
 {
 	NONE,
-	PLAYER,
-	ROPE,
-	INTERACT_GPE,
-	CLIMB,
-	OPTION,
-	MAP,
-	SPYGLASS,
-	GLIDER,
-	SLACKLINE,
-	HOIST,
-	NARROW_PASSAGE
+	PLAYER
 };
 
 USTRUCT(BlueprintType)
