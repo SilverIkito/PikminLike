@@ -4,6 +4,7 @@
 #include "PlayerCharacter.h"
 #include <PikminLike/Tools/Macro.h>
 #include <PikminLike/Controller/DynamicPlayerController.h>
+#include <PikminLike/Pawn/Pikmin.h>
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -13,9 +14,11 @@ APlayerCharacter::APlayerCharacter()
 
 	springArm = CreateDefaultSubobject<USpringArmComponent>("SpringArm");
 	camera = CreateDefaultSubobject<UCameraComponent>("Camera");
+	meshCursor = CreateDefaultSubobject<UStaticMeshComponent>("MeshCursor");
 
 	springArm->SetupAttachment(RootComponent);
 	camera->SetupAttachment(springArm);
+	meshCursor->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -43,9 +46,12 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 
 	_controller->BindActions(_component, EInputEnum::PLAYER,
-	{
-		FBindingData(this,"Movement", "MovePlayer", ETriggerEvent::Triggered),
-		FBindingData(this,"CameraRotate", "RotatePlayer", ETriggerEvent::Triggered),
+		{
+			FBindingData(this,"Movement", "MovePlayer", ETriggerEvent::Triggered),
+			FBindingData(this,"CameraRotate", "RotatePlayer", ETriggerEvent::Triggered),
+			FBindingData(this,"Call", "Call", ETriggerEvent::Started),
+			FBindingData(this,"StopPikmin", "StopPikmin", ETriggerEvent::Started),
+			FBindingData(this,"Assaut", "Assaut", ETriggerEvent::Started),
 		
 	});
 
@@ -83,5 +89,50 @@ void APlayerCharacter::RotatePlayer(const FInputActionValue& _value)
 	const float _rotationSpeed = cameraRotationSpeed * DELTATIME;
 	if (springArm->bInheritYaw)
 		AddControllerYawInput(_vector.X * _rotationSpeed);
+}
+
+void APlayerCharacter::Call(const FInputActionValue& _value)
+{
+	TArray<FHitResult> _result;
+	bool _hit = SPHERETRACE_MULTI_OBJECT(meshCursor->GetComponentLocation(),
+		meshCursor->GetComponentLocation(), radiusCall,
+		typeCall, EDrawDebugTrace::ForDuration, _result, FLinearColor::Blue, 200);
+
+	int _size = _result.Num();
+
+	for (int i = 0; i < _size; i++)
+	{
+		APikmin* _pikmin = Cast<APikmin>(_result[i].GetActor());
+		if (_pikmin || !allPikminFollow.Contains(_pikmin))
+		{
+			_pikmin->SetTarget(this);
+			allPikminFollow.Add(_pikmin);
+		}
+	}
+}
+
+void APlayerCharacter::StopPikmin(const FInputActionValue& _value)
+{
+	LOG("STOP pikmin");
+	int _size = allPikminFollow.Num();
+	for (int i = 0; i < _size; i++)
+	{
+		allPikminFollow[i]->ResetTarget();
+	}
+}
+
+void APlayerCharacter::Assaut(const FInputActionValue& _value)
+{
+	if (allPikminFollow.Num() == 0) return;
+	FVector _forward = GetActorForwardVector();
+	int _size = allPikminFollow.Num();
+	for (int i = 0; i < _size; i++)
+	{
+		allPikminFollow[i]->ResetTarget();
+		allPikminFollow[i]->Rotate(GetActorLocation() * GetActorForwardVector() * 10);
+		allPikminFollow[i]->onAssaut.Broadcast();
+	}
+	LOG("Assaut"); 
+	allPikminFollow.Empty();
 }
 

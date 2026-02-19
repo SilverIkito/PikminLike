@@ -2,38 +2,79 @@
 
 
 #include "Pikmin.h"
+#include <AIController.h>
+#include "GameFramework/CharacterMovementComponent.h"
+#include "../Tools/Macro.h"
 
-// Sets default values
 APikmin::APikmin()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-	RootComponent = CreateDefaultSubobject<USceneComponent>("Root");
-	skeletal = CreateDefaultSubobject<USkeletalMeshComponent>("Skeletal");
-	capsule = CreateDefaultSubobject<UCapsuleComponent>("Capsule");
-	
-	skeletal->SetupAttachment(RootComponent);
-	capsule->SetupAttachment(RootComponent);
+ 	PrimaryActorTick.bCanEverTick = true;
+	ADD_COMPONENT(sight, USightComponent, "Sight");
+
 }
 
-// Called when the game starts or when spawned
 void APikmin::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-// Called every frame
 void APikmin::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-// Called to bind functionality to input
 void APikmin::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void APikmin::SetTarget(AActor* _actor)
+{
+	if (!_actor) return;
+	target = _actor;
+	onAddTarget.Broadcast(_actor);
+}
+
+void APikmin::ResetTarget()
+{
+	target = nullptr;
+	AAIController* _controller = Cast<AAIController>(GetController());
+	_controller->StopMovement();
+	onResetTarget.Broadcast();
+}
+
+void APikmin::MoveToTarget()
+{
+	AAIController* _controller = Cast<AAIController>(GetController());
+
+	_controller->MoveToActor(target, acceptenceRadius);
+	
+}
+
+void APikmin::MoveToDestination(FVector _destination)
+{
+	AAIController* _controller = Cast<AAIController>(GetController());
+
+	_controller->MoveToLocation(_destination, acceptenceRadius);
+}
+                             
+void APikmin::MoveForward()
+{
+	SetActorLocation(GetActorLocation() + GetActorForwardVector() * DELTATIME * 1000);
+}
+
+void APikmin::Rotate(FVector _destination)
+{
+	FRotator _rot = UKML::FindLookAtRotation(GetActorLocation(), _destination);
+
+	SetActorRotation(_rot);
+}
+
+void APikmin::PickUpItem(AActor* _actor)
+{
+	_actor->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 }
 
