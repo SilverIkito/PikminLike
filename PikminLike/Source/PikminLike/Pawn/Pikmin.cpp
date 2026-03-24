@@ -5,6 +5,8 @@
 #include <AIController.h>
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../Tools/Macro.h"
+#include "../Player/PlayerCharacter.h"
+#include <PikminLike/Subsystem/InfoLevelWorldSubsystem.h>
 
 APikmin::APikmin()
 {
@@ -16,6 +18,8 @@ APikmin::APikmin()
 void APikmin::BeginPlay()
 {
 	Super::BeginPlay();
+	onionRef = GetWorld()->GetSubsystem<UInfoLevelWorldSubsystem>()->GetOnionRef();
+	sight->onDetect.AddDynamic(this, &APikmin::PickUpItem);
 	
 }
 
@@ -31,11 +35,14 @@ void APikmin::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void APikmin::SetTarget(AActor* _actor)
+void APikmin::SetTargetToFollow(AActor* _actor)
 {
 	if (!_actor) return;
+	if (itemToPickUp)
+		PutItem();
+		
 	target = _actor;
-	onAddTarget.Broadcast(_actor);
+	onAddTargetToFollow.Broadcast();
 }
 
 void APikmin::ResetTarget()
@@ -44,6 +51,21 @@ void APikmin::ResetTarget()
 	AAIController* _controller = Cast<AAIController>(GetController());
 	_controller->StopMovement();
 	onResetTarget.Broadcast();
+}
+
+void APikmin::PutItem()
+{
+	itemToPickUp->GetComponentByClass<UStaticMeshComponent>()->SetSimulatePhysics(true);
+	itemToPickUp->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	itemToPickUp->SetCanTake(true);
+
+	FHitResult _result;
+	//bool _hit = LINETRACE_SINGLE(_result, GetActorLocation() + GetActorForwardVector() * 150, GetActorLocation() + GetActorForwardVector() * 150 - FVector(0,0, -100));
+	bool _hit = UKSL::LineTraceSingle(this, GetActorLocation() + GetActorForwardVector() * 150, GetActorLocation() + GetActorForwardVector() * 150 - FVector(0, 0, 200),
+		ETraceTypeQuery::TraceTypeQuery1, false, {}, EDrawDebugTrace::ForDuration, _result,true);
+	if (_hit)
+		itemToPickUp->SetActorLocation(_result.ImpactPoint + FVector(0,0,20));
+	itemToPickUp = nullptr;
 }
 
 void APikmin::MoveToTarget()
@@ -75,6 +97,30 @@ void APikmin::Rotate(FVector _destination)
 
 void APikmin::PickUpItem(AActor* _actor)
 {
-	_actor->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+	if (CAST(AItemCollect, _item, _actor))
+	{
+		if (!_item->CanTake()) return;
+		_item->SetCanTake(false);
+		_item->GetComponentByClass<UStaticMeshComponent>()->SetSimulatePhysics(false);
+		_item->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+		itemToPickUp = _item;
+		target = onionRef;
+		_item->SetActorRelativeLocation(FVector(0,0,100));
+		onAddPickUp.Broadcast();
+	}
+}
+
+void APikmin::CheckGivePickUp()
+{
+	if (!itemToPickUp) return;
+
+	FRAME_LOG(FString::SanitizeFloat(FVector::Dist(GetActorLocation(), onionRef->GetActorLocation())));
+
+	if (FVector::Dist(GetActorLocation(), onionRef->GetActorLocation()) < 200)
+	{
+		itemToPickUp->Destroy();
+		itemToPickUp = nullptr;
+		ResetTarget();
+	}
 }
 

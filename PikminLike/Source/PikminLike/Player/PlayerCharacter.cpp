@@ -52,11 +52,33 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 			FBindingData(this,"Call", "Call", ETriggerEvent::Started),
 			FBindingData(this,"StopPikmin", "StopPikmin", ETriggerEvent::Started),
 			FBindingData(this,"Assaut", "Assaut", ETriggerEvent::Started),
-		
+			FBindingData(this,"SendPikmin", "SendPikmin", ETriggerEvent::Started),
+			
 	});
 
 	ChangeInputState(EInputEnum::PLAYER);
 
+}
+
+APikmin* APlayerCharacter::GetCloserPikmin()
+{
+	int _size = allPikminFollow.Num();
+	if(_size == 0) return nullptr;
+	if (_size == 1) return allPikminFollow[0];
+
+	float _minDist = FVector::Dist(GetActorLocation(), allPikminFollow[0]->GetActorLocation());
+	int _index = 0;
+	for (int i = 0; i < _size; i++)
+	{
+		float _dist = FVector::Dist(GetActorLocation(), allPikminFollow[i]->GetActorLocation());
+		if (_dist < _minDist)
+		{
+			_minDist = _dist;
+			_index = i;
+		}
+	}
+
+	return allPikminFollow[_index];
 }
 
 void APlayerCharacter::MovePlayer(const FInputActionValue& _value)
@@ -96,7 +118,7 @@ void APlayerCharacter::Call(const FInputActionValue& _value)
 	TArray<FHitResult> _result;
 	bool _hit = SPHERETRACE_MULTI_OBJECT(meshCursor->GetComponentLocation(),
 		meshCursor->GetComponentLocation(), radiusCall,
-		typeCall, EDrawDebugTrace::ForDuration, _result, FLinearColor::Blue, 200);
+		typeCall, EDrawDebugTrace::ForDuration, _result, FLinearColor::Blue, 2);
 
 	int _size = _result.Num();
 
@@ -105,7 +127,7 @@ void APlayerCharacter::Call(const FInputActionValue& _value)
 		APikmin* _pikmin = Cast<APikmin>(_result[i].GetActor());
 		if (_pikmin || !allPikminFollow.Contains(_pikmin))
 		{
-			_pikmin->SetTarget(this);
+			_pikmin->SetTargetToFollow(this);
 			allPikminFollow.Add(_pikmin);
 		}
 	}
@@ -121,6 +143,18 @@ void APlayerCharacter::StopPikmin(const FInputActionValue& _value)
 	}
 }
 
+void APlayerCharacter::SendPikmin(const FInputActionValue& _value)
+{
+	APikmin* _pikminToSend = GetCloserPikmin();
+	if (!_pikminToSend) return;
+
+	_pikminToSend->ResetTarget();
+	_pikminToSend->Rotate(meshCursor->GetComponentLocation());
+	_pikminToSend->onAssaut.Broadcast();
+
+	allPikminFollow.Remove(_pikminToSend);
+}
+
 void APlayerCharacter::Assaut(const FInputActionValue& _value)
 {
 	if (allPikminFollow.Num() == 0) return;
@@ -129,7 +163,7 @@ void APlayerCharacter::Assaut(const FInputActionValue& _value)
 	for (int i = 0; i < _size; i++)
 	{
 		allPikminFollow[i]->ResetTarget();
-		allPikminFollow[i]->Rotate(GetActorLocation() * GetActorForwardVector() * 10);
+		allPikminFollow[i]->Rotate(meshCursor->GetComponentLocation());
 		allPikminFollow[i]->onAssaut.Broadcast();
 	}
 	LOG("Assaut"); 

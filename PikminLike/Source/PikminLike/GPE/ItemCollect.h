@@ -11,7 +11,12 @@ class PIKMINLIKE_API AItemCollect : public AActor
 {
 	GENERATED_BODY()
 	UPROPERTY(EditAnywhere) TObjectPtr<UStaticMeshComponent> mesh = nullptr;
+	UPROPERTY(EditAnywhere) bool canTake = true;
 	
+public:
+	FORCEINLINE bool CanTake() const { return canTake; }
+	FORCEINLINE void SetCanTake(bool _value) { canTake = _value; }
+
 public:	
 	// Sets default values for this actor's properties
 	AItemCollect();

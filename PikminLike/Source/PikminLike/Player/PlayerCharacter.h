@@ -40,9 +40,11 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	APikmin* GetCloserPikmin();
 	UFUNCTION() void MovePlayer(const FInputActionValue& _value);
 	UFUNCTION() void RotatePlayer(const FInputActionValue& _value);
 	UFUNCTION() void Call(const FInputActionValue& _value);
 	UFUNCTION() void StopPikmin(const FInputActionValue& _value);
+	UFUNCTION() void SendPikmin(const FInputActionValue& _value);
 	UFUNCTION() void Assaut(const FInputActionValue& _value);
 };
