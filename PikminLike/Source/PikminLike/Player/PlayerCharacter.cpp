@@ -125,12 +125,15 @@ void APlayerCharacter::Call(const FInputActionValue& _value)
 	for (int i = 0; i < _size; i++)
 	{
 		APikmin* _pikmin = Cast<APikmin>(_result[i].GetActor());
-		if (_pikmin || !allPikminFollow.Contains(_pikmin))
+		if (_pikmin)
 		{
+			if (allPikminFollow.Contains(_pikmin))continue;
+			
 			_pikmin->SetTargetToFollow(this);
 			allPikminFollow.Add(_pikmin);
 		}
 	}
+	onCurrentPikminUpdate.Broadcast(allPikminFollow.Num());
 }
 
 void APlayerCharacter::StopPikmin(const FInputActionValue& _value)
@@ -141,6 +144,8 @@ void APlayerCharacter::StopPikmin(const FInputActionValue& _value)
 	{
 		allPikminFollow[i]->ResetTarget();
 	}
+	allPikminFollow.Empty();
+	onCurrentPikminUpdate.Broadcast(allPikminFollow.Num());
 }
 
 void APlayerCharacter::SendPikmin(const FInputActionValue& _value)
@@ -153,6 +158,7 @@ void APlayerCharacter::SendPikmin(const FInputActionValue& _value)
 	_pikminToSend->onAssaut.Broadcast();
 
 	allPikminFollow.Remove(_pikminToSend);
+	onCurrentPikminUpdate.Broadcast(allPikminFollow.Num());
 }
 
 void APlayerCharacter::Assaut(const FInputActionValue& _value)
@@ -168,5 +174,6 @@ void APlayerCharacter::Assaut(const FInputActionValue& _value)
 	}
 	LOG("Assaut"); 
 	allPikminFollow.Empty();
+	onCurrentPikminUpdate.Broadcast(allPikminFollow.Num());
 }
 

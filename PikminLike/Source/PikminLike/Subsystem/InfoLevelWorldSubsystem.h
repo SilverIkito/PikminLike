@@ -20,7 +20,9 @@ class PIKMINLIKE_API UInfoLevelWorldSubsystem : public UWorldSubsystem
 
 public:
 	FORCEINLINE TObjectPtr<AOnion> GetOnionRef() const { return onionRef; }
+	UFUNCTION(BlueprintCallable) FORCEINLINE int GetSize() const { return allPikmin.Num(); }
 
 public:
 	void AddOnion(TObjectPtr<AOnion> _onion);
+	void AddPikmin(TObjectPtr<APikmin> _pikmin);
 };

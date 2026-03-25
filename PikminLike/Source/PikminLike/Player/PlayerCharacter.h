@@ -16,6 +16,8 @@ UCLASS()
 class PIKMINLIKE_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCurrentPikminUpdate, int, _size);
+
 	UPROPERTY(EditAnywhere) TObjectPtr<USpringArmComponent> springArm;
 	UPROPERTY(EditAnywhere) TObjectPtr<UCameraComponent> camera;
 	UPROPERTY(EditAnywhere) TObjectPtr<UStaticMeshComponent> meshCursor;
@@ -25,8 +27,11 @@ class PIKMINLIKE_API APlayerCharacter : public ACharacter
 	UPROPERTY(EditAnywhere) float playerRotationSpeed = 25;
 	UPROPERTY(EditAnywhere) float cameraRotationSpeed = 100;
 
-	UPROPERTY(EditAnywhere) float radiusCall = 200;
+	UPROPERTY(EditAnywhere) float radiusCall = 100;
 	UPROPERTY(EditAnywhere) TArray<TEnumAsByte<EObjectTypeQuery>> typeCall;
+
+public:
+	UPROPERTY(BlueprintAssignable) FOnCurrentPikminUpdate onCurrentPikminUpdate;
 
 public:
 	APlayerCharacter();

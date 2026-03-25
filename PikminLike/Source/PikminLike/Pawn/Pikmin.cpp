@@ -18,7 +18,9 @@ APikmin::APikmin()
 void APikmin::BeginPlay()
 {
 	Super::BeginPlay();
-	onionRef = GetWorld()->GetSubsystem<UInfoLevelWorldSubsystem>()->GetOnionRef();
+	TObjectPtr<UInfoLevelWorldSubsystem> _sub = GetWorld()->GetSubsystem<UInfoLevelWorldSubsystem>();
+	onionRef = _sub->GetOnionRef();
+	_sub->AddPikmin(this);
 	sight->onDetect.AddDynamic(this, &APikmin::PickUpItem);
 	
 }
@@ -105,7 +107,7 @@ void APikmin::PickUpItem(AActor* _actor)
 		_item->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 		itemToPickUp = _item;
 		target = onionRef;
-		_item->SetActorRelativeLocation(FVector(0,0,100));
+		_item->SetActorRelativeLocation(FVector(0,0,50));
 		onAddPickUp.Broadcast();
 	}
 }
