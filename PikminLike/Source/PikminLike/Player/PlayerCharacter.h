@@ -16,6 +16,8 @@ UCLASS()
 class PIKMINLIKE_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartMove);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndMove);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCurrentPikminUpdate, int, _size);
 
 	UPROPERTY(EditAnywhere) TObjectPtr<USpringArmComponent> springArm;
@@ -32,6 +34,8 @@ class PIKMINLIKE_API APlayerCharacter : public ACharacter
 
 public:
 	UPROPERTY(BlueprintAssignable) FOnCurrentPikminUpdate onCurrentPikminUpdate;
+	UPROPERTY(BlueprintAssignable) FOnStartMove onStartMove;
+	UPROPERTY(BlueprintAssignable) FOnEndMove onEndMove;
 
 public:
 	APlayerCharacter();
@@ -47,6 +51,8 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	APikmin* GetCloserPikmin();
 	UFUNCTION() void MovePlayer(const FInputActionValue& _value);
+	UFUNCTION() void StartMove(const FInputActionValue& _value);
+	UFUNCTION() void EndMove(const FInputActionValue& _value);
 	UFUNCTION() void RotatePlayer(const FInputActionValue& _value);
 	UFUNCTION() void Call(const FInputActionValue& _value);
 	UFUNCTION() void StopPikmin(const FInputActionValue& _value);

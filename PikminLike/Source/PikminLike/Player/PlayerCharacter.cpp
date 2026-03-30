@@ -48,6 +48,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	_controller->BindActions(_component, EInputEnum::PLAYER,
 		{
 			FBindingData(this,"Movement", "MovePlayer", ETriggerEvent::Triggered),
+			FBindingData(this,"StartMove", "StartMove", ETriggerEvent::Started),
+			FBindingData(this,"EndMove", "EndMove", ETriggerEvent::Completed),
 			FBindingData(this,"CameraRotate", "RotatePlayer", ETriggerEvent::Triggered),
 			FBindingData(this,"Call", "Call", ETriggerEvent::Started),
 			FBindingData(this,"StopPikmin", "StopPikmin", ETriggerEvent::Started),
@@ -103,6 +105,16 @@ void APlayerCharacter::MovePlayer(const FInputActionValue& _value)
 	FRotator _rotationLerp = FMath::RInterpTo(_currentActorRotation, _newRotation, _delta, playerRotationSpeed);
 	SetActorRotation(FRotator(_rotationLerp.Pitch, _rotationLerp.Yaw, _currentActorRotation.Roll));
 
+}
+
+void APlayerCharacter::StartMove(const FInputActionValue& _value)
+{
+	onStartMove.Broadcast();
+}
+
+void APlayerCharacter::EndMove(const FInputActionValue& _value)
+{
+	onEndMove.Broadcast();
 }
 
 void APlayerCharacter::RotatePlayer(const FInputActionValue& _value)

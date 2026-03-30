@@ -22,11 +22,15 @@ class PIKMINLIKE_API APikmin : public ACharacter
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess), BlueprintReadOnly) TObjectPtr<AActor> target = nullptr;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess), BlueprintReadOnly) bool canMove = true;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true)) float timeAssaut = 3;
 	UPROPERTY(EditAnywhere) float acceptenceRadius = 100;
 	UPROPERTY(EditAnywhere) FVector offset = FVector::ZeroVector;
 	UPROPERTY(EditAnywhere) TObjectPtr<AItemCollect> itemToPickUp = nullptr;
 	UPROPERTY(VisibleAnywhere) TObjectPtr<AOnion> onionRef = nullptr;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true)) FTimerHandle timerEndAssaut;
+
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintAssignable) FOnAddTargetToFollow onAddTargetToFollow;
@@ -46,7 +50,7 @@ protected:
 
 public:	
 	void SetTargetToFollow(AActor* _actor);
-	void ResetTarget();
+	UFUNCTION(BlueprintCallable) void ResetTarget();
 	void PutItem();
 	UFUNCTION(BlueprintCallable) void MoveToTarget();
 	UFUNCTION(BlueprintCallable) void MoveToDestination(FVector _destination);

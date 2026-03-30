@@ -35,7 +35,7 @@ void USightComponent::Sight()
 	FVector _pos = GetOwner()->GetActorLocation();
 	FHitResult _result;
 	bool _hit = UKSL::SphereTraceSingleForObjects(this, _pos, _pos, radius,
-		channel, false, {},EDrawDebugTrace::ForOneFrame, _result,true);
+		channel, false, {},EDrawDebugTrace::None, _result,true);
 
 	if (_hit)
 	{
