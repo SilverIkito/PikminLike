@@ -175,17 +175,20 @@ void APlayerCharacter::SendPikmin(const FInputActionValue& _value)
 
 void APlayerCharacter::Assaut(const FInputActionValue& _value)
 {
-	if (allPikminFollow.Num() == 0) return;
-	FVector _forward = GetActorForwardVector();
-	int _size = allPikminFollow.Num();
-	for (int i = 0; i < _size; i++)
+	if (allPikminFollow.Num() == 0 || isAssaut) return;
+	isAssaut = true;
+	GetWorld()->GetTimerManager().SetTimer(timerAssaut, this, &APlayerCharacter::AssautLoop, 0.05f, true);
+
+}
+
+void APlayerCharacter::AssautLoop()
+{
+	if (allPikminFollow.Num() == 0)
 	{
-		allPikminFollow[i]->ResetTarget();
-		allPikminFollow[i]->Rotate(meshCursor->GetComponentLocation());
-		allPikminFollow[i]->onAssaut.Broadcast();
+		isAssaut = false;
+		GetWorld()->GetTimerManager().ClearTimer(timerAssaut);
+		return;
 	}
-	LOG("Assaut"); 
-	allPikminFollow.Empty();
-	onCurrentPikminUpdate.Broadcast(allPikminFollow.Num());
+	SendPikmin(FInputActionValue());
 }
 

@@ -28,7 +28,6 @@ void APikmin::BeginPlay()
 void APikmin::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void APikmin::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

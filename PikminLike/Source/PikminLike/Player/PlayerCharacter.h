@@ -32,6 +32,9 @@ class PIKMINLIKE_API APlayerCharacter : public ACharacter
 	UPROPERTY(EditAnywhere) float radiusCall = 100;
 	UPROPERTY(EditAnywhere) TArray<TEnumAsByte<EObjectTypeQuery>> typeCall;
 
+	bool isAssaut = false;
+	FTimerHandle timerAssaut;
+
 public:
 	UPROPERTY(BlueprintAssignable) FOnCurrentPikminUpdate onCurrentPikminUpdate;
 	UPROPERTY(BlueprintAssignable) FOnStartMove onStartMove;
@@ -58,4 +61,6 @@ protected:
 	UFUNCTION() void StopPikmin(const FInputActionValue& _value);
 	UFUNCTION() void SendPikmin(const FInputActionValue& _value);
 	UFUNCTION() void Assaut(const FInputActionValue& _value);
+	UFUNCTION() void AssautLoop();
+
 };
