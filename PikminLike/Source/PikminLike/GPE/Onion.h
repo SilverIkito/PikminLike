@@ -13,17 +13,16 @@ class PIKMINLIKE_API AOnion : public AActor
 	GENERATED_BODY()
 	UPROPERTY(EditAnywhere) TObjectPtr<UStaticMeshComponent> mesh = nullptr;
 	UPROPERTY(EditAnywhere) TObjectPtr<UBillboardComponent> billboard = nullptr;
+	UPROPERTY(EditAnywhere) TObjectPtr<AActor> posToGo = nullptr;
+
+public:
+	FORCEINLINE TObjectPtr<AActor> GetLocInPosToGo() { return posToGo; }
 
 public:	
-	// Sets default values for this actor's properties
 	AOnion();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 };

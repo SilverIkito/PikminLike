@@ -9,6 +9,14 @@
 #include <PikminLike/GPE/Onion.h>
 #include "Pikmin.generated.h"
 
+UENUM()
+enum FTypePikmin
+{
+	RECUPERATOR,
+	KAMIKAZE,
+	MAX
+};
+
 UCLASS()
 class PIKMINLIKE_API APikmin : public ACharacter
 {
@@ -16,9 +24,12 @@ class PIKMINLIKE_API APikmin : public ACharacter
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAddTargetToFollow);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnResetTarget);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAssaut);
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAddPickUp);
+
+protected:
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, meta = (AllowPrivateAccess=true)) TObjectPtr<USightComponent> sight = nullptr;
+
+	UPROPERTY(EditAnywhere) TEnumAsByte<FTypePikmin> type = FTypePikmin::RECUPERATOR;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess), BlueprintReadOnly) TObjectPtr<AActor> target = nullptr;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess), BlueprintReadOnly) bool canMove = true;
@@ -28,20 +39,22 @@ class PIKMINLIKE_API APikmin : public ACharacter
 	UPROPERTY(EditAnywhere) TObjectPtr<AItemCollect> itemToPickUp = nullptr;
 	UPROPERTY(VisibleAnywhere) TObjectPtr<AOnion> onionRef = nullptr;
 
+	
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true)) FTimerHandle timerEndAssaut;
 
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintAssignable) FOnAddTargetToFollow onAddTargetToFollow;
-	UPROPERTY(EditAnywhere, BlueprintAssignable) FOnResetTarget onResetTarget;
-	UPROPERTY(EditAnywhere, BlueprintAssignable) FOnAssaut onAssaut;
-	UPROPERTY(EditAnywhere, BlueprintAssignable) FOnAddPickUp onAddPickUp;
+	UPROPERTY(BlueprintAssignable) FOnAddTargetToFollow onAddTargetToFollow;
+	UPROPERTY(BlueprintAssignable) FOnResetTarget onResetTarget;
+	UPROPERTY(BlueprintAssignable) FOnAssaut onAssaut;
+public:
+	TEnumAsByte<FTypePikmin> GetTypePikmin() const { return type; }
 
 public:
 	APikmin();
 
-public:
 
 protected:
 	virtual void BeginPlay() override;
@@ -51,11 +64,8 @@ protected:
 public:	
 	void SetTargetToFollow(AActor* _actor);
 	UFUNCTION(BlueprintCallable) void ResetTarget();
-	void PutItem();
 	UFUNCTION(BlueprintCallable) void MoveToTarget();
 	UFUNCTION(BlueprintCallable) void MoveToDestination(FVector _destination);
 	UFUNCTION(BlueprintCallable) void MoveForward();
 	UFUNCTION(BlueprintCallable) void Rotate(FVector _destination);
-	UFUNCTION() void PickUpItem(AActor* _actor);
-	UFUNCTION(BlueprintCallable) void CheckGivePickUp();
 };

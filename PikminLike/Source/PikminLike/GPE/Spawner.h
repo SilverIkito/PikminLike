@@ -11,6 +11,7 @@ UCLASS()
 class PIKMINLIKE_API ASpawner : public AActor
 {
 	GENERATED_BODY()
+	UPROPERTY(EditAnywhere) TObjectPtr<UStaticMeshComponent> mesh;
 	UPROPERTY(EditAnywhere) TObjectPtr<UBillboardComponent> billboard;
 	UPROPERTY(VisibleAnywhere) TObjectPtr<AActor> actorRef;
 	UPROPERTY(EditAnywhere) TSubclassOf<AActor> actorToSpawn;
@@ -20,11 +21,8 @@ public:
 	ASpawner();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	void Spawn();
 
 };

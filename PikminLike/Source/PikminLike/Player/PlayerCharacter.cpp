@@ -55,7 +55,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 			FBindingData(this,"StopPikmin", "StopPikmin", ETriggerEvent::Started),
 			FBindingData(this,"Assaut", "Assaut", ETriggerEvent::Started),
 			FBindingData(this,"SendPikmin", "SendPikmin", ETriggerEvent::Started),
-			
+			FBindingData(this,"ChangePikmin", "ChangePikmin", ETriggerEvent::Started),
 	});
 
 	ChangeInputState(EInputEnum::PLAYER);
@@ -66,12 +66,20 @@ APikmin* APlayerCharacter::GetCloserPikmin()
 {
 	int _size = allPikminFollow.Num();
 	if(_size == 0) return nullptr;
-	if (_size == 1) return allPikminFollow[0];
+	if (_size == 1)
+	{
+		if (allPikminFollow[0]->GetTypePikmin() == typeToGo)
+			return allPikminFollow[0];
+		else
+			nullptr;
+	}
 
-	float _minDist = FVector::Dist(GetActorLocation(), allPikminFollow[0]->GetActorLocation());
+	float _minDist = 9999;
+	//float _minDist = FVector::Dist(GetActorLocation(), allPikminFollow[0]->GetActorLocation());
 	int _index = 0;
 	for (int i = 0; i < _size; i++)
 	{
+		if (allPikminFollow[i]->GetTypePikmin() != typeToGo) continue;
 		float _dist = FVector::Dist(GetActorLocation(), allPikminFollow[i]->GetActorLocation());
 		if (_dist < _minDist)
 		{
@@ -80,6 +88,13 @@ APikmin* APlayerCharacter::GetCloserPikmin()
 		}
 	}
 
+	/*if (_index == 0)
+	{
+		if (allPikminFollow[0]->GetTypePikmin() != typeToGo)
+			return nullptr;
+	}*/
+	if (_minDist == 9999)
+		return nullptr;
 	return allPikminFollow[_index];
 }
 
@@ -190,5 +205,13 @@ void APlayerCharacter::AssautLoop()
 		return;
 	}
 	SendPikmin(FInputActionValue());
+}
+
+void APlayerCharacter::ChangePikmin()
+{
+	if (typeToGo == RECUPERATOR)
+		typeToGo = KAMIKAZE;
+	else if (typeToGo == KAMIKAZE)
+		typeToGo = RECUPERATOR;
 }
 

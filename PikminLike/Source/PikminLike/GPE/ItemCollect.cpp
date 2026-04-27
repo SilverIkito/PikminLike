@@ -3,6 +3,7 @@
 
 #include "ItemCollect.h"
 #include <PikminLike/Tools/Macro.h>
+#include <PikminLike/Subsystem/InfoLevelWorldSubsystem.h>
 
 // Sets default values
 AItemCollect::AItemCollect()
@@ -16,6 +17,7 @@ AItemCollect::AItemCollect()
 void AItemCollect::BeginPlay()
 {
 	Super::BeginPlay();
+	GetWorld()->GetSubsystem<UInfoLevelWorldSubsystem>()->AddItemCollect(this);
 	
 }
 
@@ -25,4 +27,6 @@ void AItemCollect::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+
 
