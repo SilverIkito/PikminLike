@@ -88,11 +88,6 @@ APikmin* APlayerCharacter::GetCloserPikmin()
 		}
 	}
 
-	/*if (_index == 0)
-	{
-		if (allPikminFollow[0]->GetTypePikmin() != typeToGo)
-			return nullptr;
-	}*/
 	if (_minDist == 9999)
 		return nullptr;
 	return allPikminFollow[_index];

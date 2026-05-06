@@ -16,5 +16,8 @@ void APikminKamikaze::BeginPlay()
 void APikminKamikaze::Explosion(AActor* _target)
 {
 	_target->Destroy();
-	SetLifeSpan(0.05f);
+	ResetTarget();
+	GetMesh()->SetVisibility(false);
+	fx->Activate();
+	SetLifeSpan(2.f);
 }

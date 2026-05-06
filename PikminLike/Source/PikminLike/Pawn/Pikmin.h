@@ -7,6 +7,7 @@
 #include <PikminLike/Component/SightComponent.h>
 #include <PikminLike/GPE/ItemCollect.h>
 #include <PikminLike/GPE/Onion.h>
+#include "NiagaraComponent.h"
 #include "Pikmin.generated.h"
 
 UENUM()
@@ -28,6 +29,7 @@ class PIKMINLIKE_API APikmin : public ACharacter
 protected:
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, meta = (AllowPrivateAccess=true)) TObjectPtr<USightComponent> sight = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true)) TObjectPtr<UNiagaraComponent> fx = nullptr;
 
 	UPROPERTY(EditAnywhere) TEnumAsByte<FTypePikmin> type = FTypePikmin::RECUPERATOR;
 

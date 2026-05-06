@@ -12,7 +12,7 @@ APikmin::APikmin()
 {
  	PrimaryActorTick.bCanEverTick = true;
 	ADD_COMPONENT(sight, USightComponent, "Sight");
-
+	ATTACH_TO(fx, UNiagaraComponent, "FX", RootComponent);
 }
 
 void APikmin::BeginPlay()
