@@ -43,7 +43,7 @@ void APikminRecuperator::CheckGivePickUp()
 	}
 	FRAME_LOG(FString::SanitizeFloat(FVector::Dist(GetActorLocation(), onionRef->GetActorLocation())));
 
-	if (FVector::Dist(GetActorLocation(), onionRef->GetActorLocation()) < 200)
+	if (FVector::Dist(GetActorLocation(), onionRef->GetActorLocation()) < 50)
 	{
 		GetWorld()->GetSubsystem<UInfoLevelWorldSubsystem>()->RemoveItemCollect(itemToPickUp);
 		itemToPickUp->Destroy();

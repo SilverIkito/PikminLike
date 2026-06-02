@@ -12,7 +12,7 @@ AOnion::AOnion()
 	PrimaryActorTick.bCanEverTick = true;
 	CDS(RootComponent, USceneComponent, "Root");
 
-	ATTACH_TO(mesh, UStaticMeshComponent, "Mesh", RootComponent);
+	ATTACH_TO(mesh, USkeletalMeshComponent, "Mesh", RootComponent);
 	ATTACH_TO(billboard, UBillboardComponent, "Billboard",RootComponent);
 }
 
