@@ -26,6 +26,7 @@ void APikminRecuperator::PickUpItem(AActor* _actor)
 		_item->SetCanTake(false);
 		_item->GetComponentByClass<UStaticMeshComponent>()->SetSimulatePhysics(false);
 		_item->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+		_item->GetComponentByClass<UStaticMeshComponent>()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		itemToPickUp = _item;
 		target = onionRef;
 		_item->SetActorRelativeLocation(FVector(0, 0, 50));
@@ -56,6 +57,7 @@ void APikminRecuperator::PutItem()
 {
 	itemToPickUp->GetComponentByClass<UStaticMeshComponent>()->SetSimulatePhysics(true);
 	itemToPickUp->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	itemToPickUp->GetComponentByClass<UStaticMeshComponent>()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	itemToPickUp->SetCanTake(true);
 
 	FHitResult _result;
